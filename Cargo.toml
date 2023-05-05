@@ -3,8 +3,13 @@ name = "check-macos-updates"
 version = "0.1.0"
 edition = "2021"
 authors = ["Johan Thorén <johan@thoren.xyz>"]
+description = "Nagios compatible plugin to check whether there are any MacOS updates available."
+readme = "README.md"
+license = "ISC"
+repository = "https://github.com/johanthoren/check_macos_updates"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+path = "src/lib.rs"
 
 [[bin]]
 name = "check_macos_updates"
@@ -12,4 +17,6 @@ path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"] }
+plist = "1.4.3"
 psutil = "3.2.2"
+serde = { version = "1.0.162", features = ["derive"] }
