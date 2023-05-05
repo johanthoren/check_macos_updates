@@ -20,7 +20,7 @@ fn exit_with_message(status: Status) {
     process::exit(status.to_int());
 }
 
-/// Check for MacOS updates. Returns warning if updates are available.
+/// Check for macOS updates. Returns warning if updates are available.
 fn main() {
     let mut status = Status::Unknown(UnkownVariant::NotMacOS);
 

@@ -24,7 +24,7 @@ impl fmt::Display for Status {
             Status::Ok => "OK - No updates available",
             Status::Warning => "WARNING - Updates available",
             Status::Critical => "CRITICAL - Updates available",
-            Status::Unknown(UnkownVariant::NotMacOS) => "UNKNOWN - Not running on MacOS",
+            Status::Unknown(UnkownVariant::NotMacOS) => "UNKNOWN - Not running on macOS",
             Status::Unknown(UnkownVariant::UnableToDetermineUpdates) => {
                 "UNKNOWN - Unable to determine available updates"
             }
