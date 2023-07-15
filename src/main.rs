@@ -31,7 +31,7 @@ fn main() {
     let args = Args::parse();
 
     if args.force_manual {
-        status = check_output(&get_output());
+        status = check_softwareupdate_output(&softwareupdate_output());
     } else {
         let software_update_plist = from_file(PLIST_FILE);
 

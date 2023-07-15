@@ -66,11 +66,11 @@ pub struct SoftwareUpdate {
     pub last_result_code: u8,
 }
 
-pub fn get_output() -> Result<Output, std::io::Error> {
+pub fn softwareupdate_output() -> Result<Output, std::io::Error> {
     process::Command::new("softwareupdate").arg("-l").output()
 }
 
-pub fn check_output(output: &Result<Output, std::io::Error>) -> Status {
+pub fn check_softwareupdate_output(output: &Result<Output, std::io::Error>) -> Status {
     match output {
         Ok(output) => {
             let output_stderr = String::from_utf8_lossy(&output.stderr);
@@ -86,12 +86,9 @@ pub fn check_output(output: &Result<Output, std::io::Error>) -> Status {
 }
 
 pub fn determine_updates(update: &SoftwareUpdate) -> Status {
-    if !update.automatic_check_enabled {
-        return check_output(&get_output());
-    }
-
-    let n = update.last_updates_available;
-    if n == 0 {
+    if !update.automatic_check_enabled && update.last_updates_available == 0 {
+        check_softwareupdate_output(&softwareupdate_output())
+    } else if update.last_updates_available == 0 {
         Status::Ok
     } else {
         Status::Warning

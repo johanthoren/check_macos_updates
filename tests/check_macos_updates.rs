@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod plist_examples;
 mod tests {
-    use crate::plist_examples::plists::{NO_UPDATES, ONE_UPDATE};
+    use crate::plist_examples::plists::{NO_UPDATES, ONE_UPDATE, ONE_UPDATE_NO_AUTO_CHECK};
     use check_macos_updates::*;
     use std::os::unix::process::ExitStatusExt;
     use std::process::Output;
@@ -32,7 +32,7 @@ mod tests {
 
         let result = Ok(output);
 
-        let status = check_output(&result);
+        let status = check_softwareupdate_output(&result);
         assert_eq!(status.to_string(), "OK - No updates available".to_string());
         assert_eq!(status.to_int(), 0);
     }
@@ -56,6 +56,24 @@ mod tests {
     fn test_read_plist_with_one_available_update() {
         let software_update_plist: SoftwareUpdate =
             plist::from_bytes(ONE_UPDATE.as_bytes()).expect("Failed to parse plist");
+
+        println!("{:?}", software_update_plist);
+
+        assert_eq!(software_update_plist.last_updates_available, 1);
+        assert_eq!(determine_updates(&software_update_plist), Status::Warning);
+
+        let status = determine_updates(&software_update_plist);
+        assert_eq!(
+            status.to_string(),
+            "WARNING - Updates available".to_string()
+        );
+        assert_eq!(status.to_int(), 1);
+    }
+
+    #[test]
+    fn test_read_plist_with_one_available_update_but_no_auto_check() {
+        let software_update_plist: SoftwareUpdate =
+            plist::from_bytes(ONE_UPDATE_NO_AUTO_CHECK.as_bytes()).expect("Failed to parse plist");
 
         println!("{:?}", software_update_plist);
 
