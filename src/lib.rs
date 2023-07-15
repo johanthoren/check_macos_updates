@@ -55,19 +55,19 @@ impl Status {
 pub struct SoftwareUpdate {
     #[serde(default)]
     pub automatic_check_enabled: bool,
-    #[serde(default)]
-    pub automatic_download: bool,
-    pub last_successful_date: String,
-    pub last_attempt_system_version: String,
+    // #[serde(default)]
+    // pub automatic_download: bool,
+    // pub last_successful_date: String,
+    // pub last_attempt_system_version: String,
     pub last_updates_available: u8,
-    pub last_recommended_updates_available: u8,
-    pub last_attempt_build_version: String,
-    pub recommended_updates: Vec<String>,
-    pub last_full_successful_date: String,
-    pub primary_languages: Vec<String>,
-    pub last_session_successful: bool,
-    pub last_background_successful_date: String,
-    pub last_result_code: u8,
+    // pub last_recommended_updates_available: u8,
+    // pub last_attempt_build_version: String,
+    // pub recommended_updates: Vec<String>,
+    // pub last_full_successful_date: String,
+    // pub primary_languages: Vec<String>,
+    // pub last_session_successful: bool,
+    // pub last_background_successful_date: String,
+    // pub last_result_code: u8,
 }
 
 pub fn softwareupdate_output() -> Result<Output, std::io::Error> {
