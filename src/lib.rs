@@ -8,6 +8,7 @@ pub const PLIST_FILE: &str = "/Library/Preferences/com.apple.SoftwareUpdate.plis
 pub enum UnkownVariant {
     NotMacOS,
     UnableToDetermineUpdates,
+    UnableToParsePlist,
 }
 
 #[derive(Debug, PartialEq)]
@@ -27,6 +28,9 @@ impl fmt::Display for Status {
             Status::Unknown(UnkownVariant::NotMacOS) => "UNKNOWN - Not running on macOS",
             Status::Unknown(UnkownVariant::UnableToDetermineUpdates) => {
                 "UNKNOWN - Unable to determine available updates"
+            }
+            Status::Unknown(UnkownVariant::UnableToParsePlist) => {
+                "UNKNOWN - Unable to parse plist file"
             }
         };
 

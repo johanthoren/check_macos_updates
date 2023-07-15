@@ -37,7 +37,7 @@ fn main() {
 
         status = match software_update_plist {
             Ok(u) => determine_updates(&u),
-            Err(_) => Status::Unknown(UnkownVariant::UnableToDetermineUpdates),
+            Err(_) => Status::Unknown(UnkownVariant::UnableToParsePlist),
         };
     }
 
