@@ -42,8 +42,8 @@ fn main() {
     }
 
     if args.critical_on_updates {
-        if let Status::Warning = status {
-            status = Status::Critical;
+        if let Status::Warning(n) = status {
+            status = Status::Critical(n);
         }
     }
 

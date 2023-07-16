@@ -14,27 +14,27 @@ pub enum UnkownVariant {
 #[derive(Debug, PartialEq)]
 pub enum Status {
     Ok,
-    Warning,
-    Critical,
+    Warning(usize),
+    Critical(usize),
     Unknown(UnkownVariant),
 }
 
 impl fmt::Display for Status {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = match self {
-            Status::Ok => "OK - No updates available",
-            Status::Warning => "WARNING - Updates available",
-            Status::Critical => "CRITICAL - Updates available",
-            Status::Unknown(UnkownVariant::NotMacOS) => "UNKNOWN - Not running on macOS",
+        match self {
+            Status::Ok => write!(f, "OK - No updates available"),
+            Status::Warning(n) => write!(f, "WARNING - Updates available: {}", n),
+            Status::Critical(n) => write!(f, "CRITICAL - Updates available: {}", n),
+            Status::Unknown(UnkownVariant::NotMacOS) => {
+                write!(f, "UNKNOWN - Not running on macOS")
+            }
             Status::Unknown(UnkownVariant::UnableToDetermineUpdates) => {
-                "UNKNOWN - Unable to determine available updates"
+                write!(f, "UNKNOWN - Unable to determine available updates")
             }
             Status::Unknown(UnkownVariant::UnableToParsePlist) => {
-                "UNKNOWN - Unable to parse plist file"
+                write!(f, "UNKNOWN - Unable to parse plist file")
             }
-        };
-
-        write!(f, "{}", s)
+        }
     }
 }
 
@@ -42,8 +42,8 @@ impl Status {
     pub fn to_int(&self) -> i32 {
         match self {
             Status::Ok => 0,
-            Status::Warning => 1,
-            Status::Critical => 2,
+            Status::Warning(_) => 1,
+            Status::Critical(_) => 2,
             Status::Unknown(_) => 3,
         }
     }
@@ -78,11 +78,16 @@ pub fn check_softwareupdate_output(output: &Result<Output, std::io::Error>) -> S
     match output {
         Ok(output) => {
             let output_stderr = String::from_utf8_lossy(&output.stderr);
+            let output_stdout = String::from_utf8_lossy(&output.stdout);
 
             if output_stderr.contains("No new software available.") {
                 Status::Ok
             } else {
-                Status::Warning
+                let n = output_stdout
+                    .lines()
+                    .filter(|l| l.contains("* Label:"))
+                    .count();
+                Status::Warning(n)
             }
         }
         Err(_) => Status::Unknown(UnkownVariant::UnableToDetermineUpdates),
@@ -90,11 +95,12 @@ pub fn check_softwareupdate_output(output: &Result<Output, std::io::Error>) -> S
 }
 
 pub fn determine_updates(update: &SoftwareUpdate) -> Status {
-    if !update.automatic_check_enabled && update.last_updates_available == 0 {
+    let updates_available = update.last_updates_available as usize;
+    if !update.automatic_check_enabled && updates_available == 0 {
         check_softwareupdate_output(&softwareupdate_output())
-    } else if update.last_updates_available == 0 {
+    } else if updates_available == 0 {
         Status::Ok
     } else {
-        Status::Warning
+        Status::Warning(updates_available)
     }
 }

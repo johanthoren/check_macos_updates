@@ -3,6 +3,7 @@ mod plist_examples;
 mod tests {
     use crate::plist_examples::plists::{NO_UPDATES, ONE_UPDATE, ONE_UPDATE_NO_AUTO_CHECK};
     use check_macos_updates::*;
+    use pretty_assertions::assert_eq;
     use std::os::unix::process::ExitStatusExt;
     use std::process::Output;
 
@@ -38,6 +39,35 @@ mod tests {
     }
 
     #[test]
+    fn test_manual_check_with_2_available_updates() {
+        let output = mock_output(
+            r#"Software Update Tool
+
+Finding available software
+Software Update found the following new or updated software:
+   * Label: Security Update 2022-001 (Catalina)
+       Title: Security Update 2022-001 (Catalina), 1 GB
+    Version: 10.15.7
+   * Label: Safari15.0CatalinaAuto-15.0
+       Title: Safari15.0CatalinaAuto-15.0, 1 MB
+    Version: 15.0
+"#
+            .as_bytes()
+            .to_vec(),
+            Vec::new(),
+            0,
+        );
+
+        let result = Ok(output);
+
+        let status = check_softwareupdate_output(&result);
+        assert_eq!(
+            status.to_string(),
+            "WARNING - Updates available: 2".to_string()
+        );
+    }
+
+    #[test]
     fn test_read_plist_with_no_available_updates() {
         let software_update_plist: SoftwareUpdate =
             plist::from_bytes(NO_UPDATES.as_bytes()).expect("Failed to parse plist");
@@ -60,12 +90,15 @@ mod tests {
         println!("{:?}", software_update_plist);
 
         assert_eq!(software_update_plist.last_updates_available, 1);
-        assert_eq!(determine_updates(&software_update_plist), Status::Warning);
+        assert_eq!(
+            determine_updates(&software_update_plist),
+            Status::Warning(1)
+        );
 
         let status = determine_updates(&software_update_plist);
         assert_eq!(
             status.to_string(),
-            "WARNING - Updates available".to_string()
+            "WARNING - Updates available: 1".to_string()
         );
         assert_eq!(status.to_int(), 1);
     }
@@ -78,12 +111,15 @@ mod tests {
         println!("{:?}", software_update_plist);
 
         assert_eq!(software_update_plist.last_updates_available, 1);
-        assert_eq!(determine_updates(&software_update_plist), Status::Warning);
+        assert_eq!(
+            determine_updates(&software_update_plist),
+            Status::Warning(1)
+        );
 
         let status = determine_updates(&software_update_plist);
         assert_eq!(
             status.to_string(),
-            "WARNING - Updates available".to_string()
+            "WARNING - Updates available: 1".to_string()
         );
         assert_eq!(status.to_int(), 1);
     }
