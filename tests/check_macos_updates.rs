@@ -34,7 +34,10 @@ mod tests {
         let result = Ok(output);
 
         let status = check_softwareupdate_output(&result);
-        assert_eq!(status.to_string(), "OK - No updates available".to_string());
+        assert_eq!(
+            status.to_string(),
+            "OK - No updates available|'Available Updates'=0".to_string()
+        );
         assert_eq!(status.to_int(), 0);
     }
 
@@ -63,7 +66,7 @@ Software Update found the following new or updated software:
         let status = check_softwareupdate_output(&result);
         assert_eq!(
             status.to_string(),
-            "WARNING - Updates available: 2".to_string()
+            "WARNING - Updates available: 2|'Available Updates'=2".to_string()
         );
     }
 
@@ -78,7 +81,10 @@ Software Update found the following new or updated software:
         assert_eq!(determine_updates(&software_update_plist), Status::Ok);
 
         let status = determine_updates(&software_update_plist);
-        assert_eq!(status.to_string(), "OK - No updates available".to_string());
+        assert_eq!(
+            status.to_string(),
+            "OK - No updates available|'Available Updates'=0".to_string()
+        );
         assert_eq!(status.to_int(), 0);
     }
 
@@ -98,7 +104,7 @@ Software Update found the following new or updated software:
         let status = determine_updates(&software_update_plist);
         assert_eq!(
             status.to_string(),
-            "WARNING - Updates available: 1".to_string()
+            "WARNING - Updates available: 1|'Available Updates'=1".to_string()
         );
         assert_eq!(status.to_int(), 1);
     }
@@ -119,7 +125,7 @@ Software Update found the following new or updated software:
         let status = determine_updates(&software_update_plist);
         assert_eq!(
             status.to_string(),
-            "WARNING - Updates available: 1".to_string()
+            "WARNING - Updates available: 1|'Available Updates'=1".to_string()
         );
         assert_eq!(status.to_int(), 1);
     }

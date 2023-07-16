@@ -22,9 +22,17 @@ pub enum Status {
 impl fmt::Display for Status {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Status::Ok => write!(f, "OK - No updates available"),
-            Status::Warning(n) => write!(f, "WARNING - Updates available: {}", n),
-            Status::Critical(n) => write!(f, "CRITICAL - Updates available: {}", n),
+            Status::Ok => write!(f, "OK - No updates available|'Available Updates'=0"),
+            Status::Warning(n) => write!(
+                f,
+                "WARNING - Updates available: {}|'Available Updates'={}",
+                n, n
+            ),
+            Status::Critical(n) => write!(
+                f,
+                "CRITICAL - Updates available: {}|'Available Updates'={}",
+                n, n
+            ),
             Status::Unknown(UnkownVariant::NotMacOS) => {
                 write!(f, "UNKNOWN - Not running on macOS")
             }
