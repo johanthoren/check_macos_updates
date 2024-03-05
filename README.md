@@ -1,4 +1,5 @@
 # check_macos_updates
+
 A Nagios compatible plugin to check if macOS system updates are available.
 
 ``` sh
