@@ -17,6 +17,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"] }
+nagios-range = "0.2.5"
 plist = "1.4.3"
 psutil = "3.2.2"
 serde = { version = "1.0.162", features = ["derive"] }

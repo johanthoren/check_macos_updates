@@ -3,6 +3,7 @@ mod plist_examples;
 mod tests {
     use crate::plist_examples::plists::{NO_UPDATES, ONE_UPDATE, ONE_UPDATE_NO_AUTO_CHECK};
     use check_macos_updates::*;
+    use nagios_range::NagiosRange;
     use pretty_assertions::assert_eq;
     use std::os::unix::process::ExitStatusExt;
     use std::process::Output;
@@ -33,10 +34,15 @@ mod tests {
 
         let result = Ok(output);
 
-        let status = check_softwareupdate_output(&result);
+        let thresholds = Thresholds {
+            warning: Some(NagiosRange::from("1").unwrap()),
+            critical: Some(NagiosRange::from("2").unwrap()),
+        };
+
+        let status = check_softwareupdate_output(&result, thresholds);
         assert_eq!(
             status.to_string(),
-            "OK - No updates available|'Available Updates'=0".to_string()
+            "OK - 0 updates available|'Available Updates'=0".to_string()
         );
         assert_eq!(status.to_int(), 0);
     }
@@ -63,7 +69,12 @@ Software Update found the following new or updated software:
 
         let result = Ok(output);
 
-        let status = check_softwareupdate_output(&result);
+        let thresholds = Thresholds {
+            warning: Some(NagiosRange::from("1").unwrap()),
+            critical: Some(NagiosRange::from("2").unwrap()),
+        };
+
+        let status = check_softwareupdate_output(&result, thresholds);
         assert_eq!(
             status.to_string(),
             "WARNING - Updates available: 2|'Available Updates'=2".to_string()
@@ -77,13 +88,21 @@ Software Update found the following new or updated software:
 
         println!("{:?}", software_update_plist);
 
-        assert_eq!(software_update_plist.last_updates_available, 0);
-        assert_eq!(determine_updates(&software_update_plist), Status::Ok);
+        let thresholds = Thresholds {
+            warning: Some(NagiosRange::from("1").unwrap()),
+            critical: Some(NagiosRange::from("2").unwrap()),
+        };
 
-        let status = determine_updates(&software_update_plist);
+        assert_eq!(software_update_plist.last_updates_available, 0);
+        assert_eq!(
+            determine_updates(&software_update_plist, thresholds.clone()),
+            Status::Ok(0)
+        );
+
+        let status = determine_updates(&software_update_plist, thresholds);
         assert_eq!(
             status.to_string(),
-            "OK - No updates available|'Available Updates'=0".to_string()
+            "OK - 0 updates available|'Available Updates'=0".to_string()
         );
         assert_eq!(status.to_int(), 0);
     }
@@ -95,13 +114,18 @@ Software Update found the following new or updated software:
 
         println!("{:?}", software_update_plist);
 
+        let thresholds = Thresholds {
+            warning: Some(NagiosRange::from("0").unwrap()),
+            critical: Some(NagiosRange::from("3").unwrap()),
+        };
+
         assert_eq!(software_update_plist.last_updates_available, 1);
         assert_eq!(
-            determine_updates(&software_update_plist),
+            determine_updates(&software_update_plist, thresholds.clone()),
             Status::Warning(1)
         );
 
-        let status = determine_updates(&software_update_plist);
+        let status = determine_updates(&software_update_plist, thresholds);
         assert_eq!(
             status.to_string(),
             "WARNING - Updates available: 1|'Available Updates'=1".to_string()
@@ -116,13 +140,18 @@ Software Update found the following new or updated software:
 
         println!("{:?}", software_update_plist);
 
+        let thresholds = Thresholds {
+            warning: Some(NagiosRange::from("0").unwrap()),
+            critical: Some(NagiosRange::from("3").unwrap()),
+        };
+
         assert_eq!(software_update_plist.last_updates_available, 1);
         assert_eq!(
-            determine_updates(&software_update_plist),
+            determine_updates(&software_update_plist, thresholds.clone()),
             Status::Warning(1)
         );
 
-        let status = determine_updates(&software_update_plist);
+        let status = determine_updates(&software_update_plist, thresholds);
         assert_eq!(
             status.to_string(),
             "WARNING - Updates available: 1|'Available Updates'=1".to_string()
