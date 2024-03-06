@@ -79,12 +79,12 @@ fn main() {
     let thresholds = Thresholds { warning, critical };
 
     if args.force_manual {
-        let check_status = check_softwareupdate_output(&softwareupdate_output(), thresholds);
+        let check_status = check_softwareupdate_output(&softwareupdate_output(), &thresholds);
         exit_with_message(check_status)
     } else {
         let software_update_plist = from_file(PLIST_FILE);
         let check_status = match software_update_plist {
-            Ok(u) => determine_updates(&u, thresholds),
+            Ok(u) => determine_updates(&u, &thresholds),
             Err(_) => Status::Unknown(UnkownVariant::UnableToParsePlist),
         };
         exit_with_message(check_status)

@@ -101,9 +101,23 @@ pub fn softwareupdate_output() -> Result<Output, std::io::Error> {
     process::Command::new("softwareupdate").arg("-l").output()
 }
 
+fn evaluate_thresholds(n: usize, thresholds: &Thresholds) -> Status {
+    if let Some(c) = thresholds.critical {
+        if c.check(n as f64) {
+            return Status::Critical(n);
+        }
+    }
+    if let Some(w) = thresholds.warning {
+        if w.check(n as f64) {
+            return Status::Warning(n);
+        }
+    }
+    Status::Ok(n)
+}
+
 pub fn check_softwareupdate_output(
     output: &Result<Output, std::io::Error>,
-    thresholds: Thresholds,
+    thresholds: &Thresholds,
 ) -> Status {
     match output {
         Ok(output) => {
@@ -119,41 +133,17 @@ pub fn check_softwareupdate_output(
                     .count()
             };
 
-            if let Some(c) = thresholds.critical {
-                if c.check(n as f64) {
-                    return Status::Critical(n);
-                }
-            }
-
-            if let Some(w) = thresholds.warning {
-                if w.check(n as f64) {
-                    return Status::Warning(n);
-                }
-            }
-
-            Status::Ok(n)
+            evaluate_thresholds(n, thresholds)
         }
         Err(_) => Status::Unknown(UnkownVariant::UnableToDetermineUpdates),
     }
 }
 
-pub fn determine_updates(update: &SoftwareUpdate, thresholds: Thresholds) -> Status {
+pub fn determine_updates(update: &SoftwareUpdate, thresholds: &Thresholds) -> Status {
     let n = update.last_updates_available as usize;
     if !update.automatic_check_enabled && n == 0 {
         check_softwareupdate_output(&softwareupdate_output(), thresholds)
     } else {
-        if let Some(c) = thresholds.critical {
-            if c.check(n as f64) {
-                return Status::Critical(n);
-            }
-        }
-
-        if let Some(w) = thresholds.warning {
-            if w.check(n as f64) {
-                return Status::Warning(n);
-            }
-        }
-
-        Status::Ok(n)
+        evaluate_thresholds(n, thresholds)
     }
 }

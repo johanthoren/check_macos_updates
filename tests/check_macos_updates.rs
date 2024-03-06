@@ -39,7 +39,7 @@ mod tests {
             critical: Some(NagiosRange::from("2").unwrap()),
         };
 
-        let status = check_softwareupdate_output(&result, thresholds);
+        let status = check_softwareupdate_output(&result, &thresholds);
         assert_eq!(
             status.to_string(),
             "OK - 0 updates available|'Available Updates'=0".to_string()
@@ -74,7 +74,7 @@ Software Update found the following new or updated software:
             critical: Some(NagiosRange::from("2").unwrap()),
         };
 
-        let status = check_softwareupdate_output(&result, thresholds);
+        let status = check_softwareupdate_output(&result, &thresholds);
         assert_eq!(
             status.to_string(),
             "WARNING - Updates available: 2|'Available Updates'=2".to_string()
@@ -95,11 +95,11 @@ Software Update found the following new or updated software:
 
         assert_eq!(software_update_plist.last_updates_available, 0);
         assert_eq!(
-            determine_updates(&software_update_plist, thresholds.clone()),
+            determine_updates(&software_update_plist, &thresholds),
             Status::Ok(0)
         );
 
-        let status = determine_updates(&software_update_plist, thresholds);
+        let status = determine_updates(&software_update_plist, &thresholds);
         assert_eq!(
             status.to_string(),
             "OK - 0 updates available|'Available Updates'=0".to_string()
@@ -121,11 +121,11 @@ Software Update found the following new or updated software:
 
         assert_eq!(software_update_plist.last_updates_available, 1);
         assert_eq!(
-            determine_updates(&software_update_plist, thresholds.clone()),
+            determine_updates(&software_update_plist, &thresholds),
             Status::Warning(1)
         );
 
-        let status = determine_updates(&software_update_plist, thresholds);
+        let status = determine_updates(&software_update_plist, &thresholds);
         assert_eq!(
             status.to_string(),
             "WARNING - Updates available: 1|'Available Updates'=1".to_string()
@@ -147,11 +147,11 @@ Software Update found the following new or updated software:
 
         assert_eq!(software_update_plist.last_updates_available, 1);
         assert_eq!(
-            determine_updates(&software_update_plist, thresholds.clone()),
+            determine_updates(&software_update_plist, &thresholds),
             Status::Warning(1)
         );
 
-        let status = determine_updates(&software_update_plist, thresholds);
+        let status = determine_updates(&software_update_plist, &thresholds);
         assert_eq!(
             status.to_string(),
             "WARNING - Updates available: 1|'Available Updates'=1".to_string()
