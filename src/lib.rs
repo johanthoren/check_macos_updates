@@ -11,6 +11,7 @@ pub struct Thresholds {
     pub critical: Option<NagiosRange>,
 }
 
+#[non_exhaustive]
 #[derive(Debug, PartialEq)]
 pub enum UnkownVariant {
     NotMacOS,
