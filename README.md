@@ -2,9 +2,9 @@
 
 ``` sh
 $ check_macos_updates -h
-A Nagios compatible plugin that checks for available MacOS updates.
+A monitoring plugin that checks for available MacOS updates.
 
-Thresholds are defined using Nagios range syntax. Examples:
+Thresholds are defined using monitoring plugin range syntax. Examples:
 +------------------+-------------------------------------------------+
 | Range definition | Generate an alert if x...                       |
 +------------------+-------------------------------------------------+

@@ -1,13 +1,13 @@
 use check_macos_updates::*;
 use clap::Parser;
-use nagios_range::NagiosRange;
+use nagios_range::NagiosRange as ThresholdRange;
 use plist::from_file;
 use std::process;
 
 const ABOUT_TEXT: &str = r#"
-A Nagios compatible plugin that checks for available MacOS updates.
+A monitoring plugin that checks for available MacOS updates.
 
-Thresholds are defined using Nagios range syntax. Examples:
+Thresholds are defined using monitoring plugin range syntax. Examples:
 +------------------+-------------------------------------------------+
 | Range definition | Generate an alert if x...                       |
 +------------------+-------------------------------------------------+
@@ -56,20 +56,20 @@ fn main() {
         exit_with_message(Status::Unknown(UnkownVariant::NoThresholds))
     }
 
-    let mut warning: Option<NagiosRange> = None;
+    let mut warning: Option<ThresholdRange> = None;
 
     if let Some(w) = args.warning {
-        let w_range = NagiosRange::from(&w);
+        let w_range = ThresholdRange::from(&w);
         match w_range {
             Ok(r) => warning = Some(r),
             Err(e) => exit_with_message(Status::Unknown(UnkownVariant::RangeParseError(w, e))),
         }
     }
 
-    let mut critical: Option<NagiosRange> = None;
+    let mut critical: Option<ThresholdRange> = None;
 
     if let Some(c) = args.critical {
-        let c_range = NagiosRange::from(&c);
+        let c_range = ThresholdRange::from(&c);
         match c_range {
             Ok(r) => critical = Some(r),
             Err(e) => exit_with_message(Status::Unknown(UnkownVariant::RangeParseError(c, e))),

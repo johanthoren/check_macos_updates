@@ -3,7 +3,7 @@ mod plist_examples;
 mod tests {
     use crate::plist_examples::plists::{NO_UPDATES, ONE_UPDATE, ONE_UPDATE_NO_AUTO_CHECK};
     use check_macos_updates::*;
-    use nagios_range::NagiosRange;
+    use nagios_range::NagiosRange as ThresholdRange;
     use pretty_assertions::assert_eq;
     use std::os::unix::process::ExitStatusExt;
     use std::process::Output;
@@ -35,8 +35,8 @@ mod tests {
         let result = Ok(output);
 
         let thresholds = Thresholds {
-            warning: Some(NagiosRange::from("1").unwrap()),
-            critical: Some(NagiosRange::from("2").unwrap()),
+            warning: Some(ThresholdRange::from("1").unwrap()),
+            critical: Some(ThresholdRange::from("2").unwrap()),
         };
 
         let status = check_softwareupdate_output(&result, &thresholds);
@@ -70,8 +70,8 @@ Software Update found the following new or updated software:
         let result = Ok(output);
 
         let thresholds = Thresholds {
-            warning: Some(NagiosRange::from("1").unwrap()),
-            critical: Some(NagiosRange::from("2").unwrap()),
+            warning: Some(ThresholdRange::from("1").unwrap()),
+            critical: Some(ThresholdRange::from("2").unwrap()),
         };
 
         let status = check_softwareupdate_output(&result, &thresholds);
@@ -89,8 +89,8 @@ Software Update found the following new or updated software:
         println!("{:?}", software_update_plist);
 
         let thresholds = Thresholds {
-            warning: Some(NagiosRange::from("1").unwrap()),
-            critical: Some(NagiosRange::from("2").unwrap()),
+            warning: Some(ThresholdRange::from("1").unwrap()),
+            critical: Some(ThresholdRange::from("2").unwrap()),
         };
 
         assert_eq!(software_update_plist.last_updates_available, 0);
@@ -115,8 +115,8 @@ Software Update found the following new or updated software:
         println!("{:?}", software_update_plist);
 
         let thresholds = Thresholds {
-            warning: Some(NagiosRange::from("0").unwrap()),
-            critical: Some(NagiosRange::from("3").unwrap()),
+            warning: Some(ThresholdRange::from("0").unwrap()),
+            critical: Some(ThresholdRange::from("3").unwrap()),
         };
 
         assert_eq!(software_update_plist.last_updates_available, 1);
@@ -141,8 +141,8 @@ Software Update found the following new or updated software:
         println!("{:?}", software_update_plist);
 
         let thresholds = Thresholds {
-            warning: Some(NagiosRange::from("0").unwrap()),
-            critical: Some(NagiosRange::from("3").unwrap()),
+            warning: Some(ThresholdRange::from("0").unwrap()),
+            critical: Some(ThresholdRange::from("3").unwrap()),
         };
 
         assert_eq!(software_update_plist.last_updates_available, 1);

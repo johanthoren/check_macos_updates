@@ -1,4 +1,5 @@
-use nagios_range::NagiosRange;
+use nagios_range::Error as RangeError;
+use nagios_range::NagiosRange as ThresholdRange;
 use serde::Deserialize;
 use std::fmt;
 use std::process::{self, Output};
@@ -7,8 +8,8 @@ pub const PLIST_FILE: &str = "/Library/Preferences/com.apple.SoftwareUpdate.plis
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Thresholds {
-    pub warning: Option<NagiosRange>,
-    pub critical: Option<NagiosRange>,
+    pub warning: Option<ThresholdRange>,
+    pub critical: Option<ThresholdRange>,
 }
 
 #[non_exhaustive]
@@ -16,7 +17,7 @@ pub struct Thresholds {
 pub enum UnkownVariant {
     NotMacOS,
     NoThresholds,
-    RangeParseError(String, nagios_range::Error),
+    RangeParseError(String, RangeError),
     UnableToDetermineUpdates,
     UnableToParsePlist,
 }
