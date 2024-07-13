@@ -1,6 +1,6 @@
 [package]
 name = "check-macos-updates"
-version = "0.3.3"
+version = "0.3.4"
 edition = "2021"
 authors = ["Johan Thorén <johan@thoren.xyz>"]
 description = "A monitoring plugin to check if macOS system updates are available."
