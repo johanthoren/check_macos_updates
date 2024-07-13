@@ -20,8 +20,7 @@ Thresholds are defined using monitoring plugin range syntax. Examples:
 | 10:20            | < 10 or > 20, (outside the range of {10 .. 20}) |
 +------------------+-------------------------------------------------+
 | @10:20           | ≥ 10 and ≤ 20, (inside the range of {10 .. 20}) |
-+------------------+-------------------------------------------------+
-"#;
++------------------+-------------------------------------------------+"#;
 
 #[derive(Parser, Debug)]
 #[command(author, version, long_about = None, about = ABOUT_TEXT)]
@@ -39,18 +38,26 @@ struct Args {
     critical: Option<String>,
 }
 
-fn exit_with_message(status: Status) {
+fn exit_with_message(status: Status) -> ! {
     println!("{}", status);
     process::exit(status.to_int());
 }
 
 /// Check for macOS updates. Returns warning if updates are available.
 fn main() {
+    // According to monitoring-plugins guidelines, exit code 3 is used for "UNKNOWN" and
+    // should be used for the --help and --version flags.
+    let args = Args::try_parse().unwrap_or_else(|e| match e.kind() {
+        clap::error::ErrorKind::DisplayHelp | clap::error::ErrorKind::DisplayVersion => {
+            print!("{}", e);
+            std::process::exit(3);
+        }
+        _ => exit_with_message(Status::Unknown(UnkownVariant::ClapError(e.to_string()))),
+    });
+
     if !cfg!(target_os = "macos") {
         exit_with_message(Status::Unknown(UnkownVariant::NotMacOS))
     }
-
-    let args = Args::parse();
 
     if args.warning.is_none() && args.critical.is_none() {
         exit_with_message(Status::Unknown(UnkownVariant::NoThresholds))

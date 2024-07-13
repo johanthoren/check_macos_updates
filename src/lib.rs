@@ -15,6 +15,7 @@ pub struct Thresholds {
 #[non_exhaustive]
 #[derive(Debug, PartialEq)]
 pub enum UnkownVariant {
+    ClapError(String),
     NotMacOS,
     NoThresholds,
     RangeParseError(String, RangeError),
@@ -44,6 +45,15 @@ impl fmt::Display for Status {
                 "CRITICAL - Updates available: {}|'Available Updates'={}",
                 n, n
             ),
+            Status::Unknown(UnkownVariant::ClapError(s)) => {
+                let trimmed = s.trim_end();
+                let without_leading_error = trimmed.trim_start_matches("error: ");
+                write!(
+                    f,
+                    "UNKNOWN - Command line parsing produced an error: {}",
+                    without_leading_error,
+                )
+            }
             Status::Unknown(UnkownVariant::NotMacOS) => {
                 write!(f, "UNKNOWN - Not running on macOS")
             }

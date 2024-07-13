@@ -10,7 +10,7 @@ fn test_cli_help() -> Result<(), Box<dyn std::error::Error>> {
     cmd.arg("--help");
 
     cmd.assert()
-        .success()
+        .code(predicate::eq(3))
         .stdout(predicate::str::contains("Usage:"))
         .stdout(predicate::str::contains("Options:"));
 
@@ -25,7 +25,7 @@ fn test_cli_version() -> Result<(), Box<dyn std::error::Error>> {
     cmd.arg("--version");
 
     cmd.assert()
-        .success()
+        .code(predicate::eq(3))
         .stdout(predicate::str::contains(env!("CARGO_PKG_VERSION")));
 
     Ok(())
