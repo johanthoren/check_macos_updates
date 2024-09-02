@@ -16,14 +16,14 @@ name = "check_macos_updates"
 path = "src/main.rs"
 
 [dependencies]
-clap = { version = "4.2.7", features = ["derive"] }
+clap = { version = "4.5.16", features = ["derive"] }
 nagios-range = "0.2.5"
-plist = "1.4.3"
-psutil = "3.2.2"
-serde = { version = "1.0.162", features = ["derive"] }
+plist = "1.7.0"
+psutil = "3.3.0"
+serde = { version = "1.0.209", features = ["derive"] }
 
 [dev-dependencies]
-pretty_assertions = "1.3.0"
-assert_cmd = "2.0.11"
-predicates = "3.0.3"
-tempfile = "3.6.0"
+pretty_assertions = "1.4.0"
+assert_cmd = "2.0.16"
+predicates = "3.1.2"
+tempfile = "3.12.0"
